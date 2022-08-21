@@ -58,7 +58,7 @@ class GraphController:
         for k in range(1, self.nodes_cnt + 1):
             for i in range(1, self.nodes_cnt + 1):
                 for j in range(1, self.nodes_cnt + 1):
-                    sp[i][j] = min(sp[i][j] , sp[i][k] + sp[k][j])
+                    sp[i][j] = min(sp[i][j] , (sp[i][k] + sp[k][j]))
                     
         
         return sp
