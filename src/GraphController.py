@@ -6,12 +6,13 @@ class GraphController:
     def __init__(self, graph: Graph):
         self.graph = graph
         self.nodes_cnt = len(graph.nodes)
+        
         self.adjacent_paths = [[] for i in range(self.nodes_cnt + 1)] # nodes' IDs are not zero based apparently :)
         self.shortest_path = self.floyd_warshall_algorithm()
         
         for path in graph.paths:
-            self.adjacent_paths[path.first_node_id].append[path]
-            self.adjacent_paths[path.second_node_id].append[path]
+            self.adjacent_paths[path.first_node_id].append(path)
+            self.adjacent_paths[path.second_node_id].append(path)
         
     def get_graph(self):
         """Returns the given graph"""
@@ -35,7 +36,8 @@ class GraphController:
     def floyd_warshall_algorithm(self):
         """Implement floyd algorithm to calculate the shortest path"""
         
-        sp = [[] for i in range(self.nodes_cnt + 1)] # a 2D list to store shortest path between each two nodes
+        row = [1 for i in range(self.nodes_cnt + 1)]
+        sp = [row for i in range(self.nodes_cnt + 1)] # a 2D list to store shortest path between each two nodes
         
         for i in range(1, self.nodes_cnt + 1):
             for j in range(1, self.nodes_cnt + 1):
@@ -56,7 +58,7 @@ class GraphController:
         for k in range(1, self.nodes_cnt + 1):
             for i in range(1, self.nodes_cnt + 1):
                 for j in range(1, self.nodes_cnt + 1):
-                    sp[i][j] = min(sp[i][j] , (sp[i][j], sp[i][k] + sp[k][j]))
+                    sp[i][j] = min(sp[i][j] , sp[i][k] + sp[k][j])
                     
         
         return sp
@@ -70,7 +72,7 @@ class GraphController:
         
         return source 
     
-    def get_score(self, node_id, polices_list):
+    def get_score(self, node_id, polices_list):#??
         closest = 1000000
         for police in polices_list:
             closest = min(closest, self.get_distance(node_id, police))

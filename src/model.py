@@ -103,7 +103,7 @@ class Path:
 
 
 class Graph:
-    def __init__(self, paths:list, nodes: list):
+    def __init__(self, paths, nodes):
         self.paths = paths
         self.nodes = nodes
 
