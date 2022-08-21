@@ -9,7 +9,7 @@ from src.model import *
 
 def get_thief_starting_node(view: GameView) -> int:
     node_count = len(view.config.graph.nodes)
-    return random.randint(0,node_count)
+    return randint(1,node_count)
 
 
 class Phone:
@@ -26,7 +26,7 @@ class AI:
         self.graph_controller = GraphController(view.config.graph)
         self.phone = phone
         self.thiefs = list()
-        self.graph_controller = NULL
+        # self.graph_controller = NULL
 
     def thief_move_ai(self, view: GameView) -> int:
         # write your code here
@@ -63,17 +63,17 @@ class AI:
             self.update_thief(view)
         
         if len(self.thiefs) == 0:
-            dest = randint(0, len(view.config.graph.nodes) + 1)
+            dest = randint(1, len(view.config.graph.nodes))
             return self.graph_controller.get_next_on_path(me.node_id, dest)
         
         closestThief = NULL
         for thief in self.thiefs:
             if closestThief == NULL:
-                if randint(0,5) < 2:
+                if randint(1,5) < 2:
                     closestThief = thief
                     
             if type(closestThief) == Agent and self.graph_controller.get_distance(me.node_id, thief.node_id) < self.graph_controller.get_distance(me.node_id, closestThief.node_id):
-                if randint(0,5) < 2:
+                if randint(1,5) < 2:
                     closestThief = thief
                     
         if closestThief != NULL:
