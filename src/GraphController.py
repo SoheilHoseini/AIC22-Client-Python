@@ -7,22 +7,24 @@ class GraphController:
         self.graph = graph
         self.nodes_cnt = len(graph.nodes)
         
+        self.adjacent_paths:list
         self.adjacent_paths = [[] for i in range(self.nodes_cnt + 1)] # nodes' IDs are not zero based apparently :)
         self.shortest_path = self.floyd_warshall_algorithm()
         
+        path:Path
         for path in graph.paths:
-            self.adjacent_paths[path.first_node_id].append(path)
-            self.adjacent_paths[path.second_node_id].append(path)
+            self.adjacent_paths[path.first_node_id.id].append(path)
+            self.adjacent_paths[path.second_node_id.id].append(path)
         
     def get_graph(self):
         """Returns the given graph"""
         return self.graph
     
-    def get_adjacent_path(self, node_id):
+    def get_adjacent_path(self, node_id: int):
         """Get all adjacent paths to the given node"""
         return self.adjacent_paths[node_id] 
      
-    def get_distance(self, u, v):
+    def get_distance(self, u: int, v: int):
         """Get the distence between node u and v"""
         return self.shortest_path[u][v]
     
@@ -47,10 +49,10 @@ class GraphController:
         for i in range(1, self.nodes_cnt + 1):
             sp[i][i] = 0
             
-        
+        path: Path
         for path in self.graph.paths:
-            u = path.first_node_id
-            v = path.second_node_id
+            u = path.first_node_id.id
+            v = path.second_node_id.id
             sp[u][v] = 1
             sp[v][u] = 1
             
@@ -63,16 +65,17 @@ class GraphController:
         
         return sp
     
-    def get_next_on_path(self, source, dest):
+    def get_next_on_path(self, source_node_id: int, dest_node_id: int):
         """returns the next node in the path towards the detination node"""
-        for path in self.adjacent_paths[source]:
-            next_node = path.first_node_id ^ path.second_node_id ^ source
-            if (self.shortest_path[source][dest] == self.shortest_path[next_node][dest] + 1):
-                return next_node
+        path: Path
+        for path in self.adjacent_paths[source_node_id]:
+            next_node_id = path.first_node_id.id ^ path.second_node_id.id ^ source_node_id
+            if (self.shortest_path[source_node_id][dest_node_id] == self.shortest_path[next_node_id][dest_node_id] + 1):
+                return next_node_id
         
-        return source 
+        return source_node_id 
     
-    def get_score(self, node_id, polices_list):#??
+    def get_score(self, node_id: int, polices_list):#??
         closest = 1000000
         for police in polices_list:
             closest = min(closest, self.get_distance(node_id, police))

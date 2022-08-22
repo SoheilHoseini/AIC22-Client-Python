@@ -1,14 +1,14 @@
 from asyncio.windows_events import NULL
 from operator import le
 from random import randint, random, seed
+from tkinter import Pack
 from src.GraphController import GraphController
 from src.client import GameClient
-from src.hide_and_seek_pb2 import THIEF, Agent
-from src.model import *
+from src.model import GameView, Agent, AgentType,Path
 
 
-def get_thief_starting_node(view: GameView) -> int:
-    node_count = len(view.config.graph.nodes)
+def get_thief_starting_node(gameView: GameView) -> int:
+    node_count = len(gameView.config.graph.nodes)
     return randint(1,node_count)
 
 
@@ -26,23 +26,25 @@ class AI:
         self.graph_controller = GraphController(view.config.graph)
         self.phone = phone
         self.thiefs = list()
-        # self.graph_controller = NULL
 
-    def thief_move_ai(self, view: GameView) -> int:
-        # write your code here
-        me = view.viewer
+    def thief_move_ai(self, gameView: GameView) -> int:
+
+        me:Agent
+        me = gameView.viewer
         adjacentPath = self.graph_controller.get_adjacent_path(me.id)
-        police = []
-        for agent in view.visible_agents:
+        enemyPolices = []
+        
+        agent:Agent
+        for agent in gameView.visible_agents:
             if( agent.team != me.team and agent.agent_type == AgentType.POLICE):
-                police.append(agent.id)
+                enemyPolices.append(agent.id)
         
         next = me.id
-
+        path:Path
         for path in adjacentPath:
-            adj = me.id ^ path.first_node_id ^ path.second_node_id
-            if (self.graph_controller.get_score(next, police) <= self.graph_controller.get_score(adj, police)):
-                next = adj
+            adjacentNode = me.id ^ path.first_node_id.id ^ path.second_node_id.id
+            if (self.graph_controller.get_score(next, enemyPolices) < self.graph_controller.get_score(adjacentNode, enemyPolices)):
+                next = adjacentNode
 
         # message = ''
         # for m in range(len(view.visible_agents)):
@@ -50,31 +52,30 @@ class AI:
         # self.phone.send_message(message)
         return next
 
-    def police_move_ai(self, view: GameView) -> int:
-        self.phone.send_message('00101001')
+    def police_move_ai(self, gameView: GameView) -> int:
+        #self.phone.send_message('00101001')
         
-        # write your code here
         if self.graph_controller == NULL:
-            self.graph_controller = GraphController(view.config.graph)
+            self.graph_controller = GraphController(gameView.config.graph)
         
-        me = view.viewer
-        visibleTurns = view.config.visible_turns
-        if view.turn.turn_number in visibleTurns:
-            self.update_thief(view)
+        me:Agent
+        me = gameView.viewer
+        visibleTurns = gameView.config.visible_turns
+        if gameView.turn.turn_number in visibleTurns:
+            self.update_thief(gameView)
         
         if len(self.thiefs) == 0:
-            dest = randint(1, len(view.config.graph.nodes))
-            return self.graph_controller.get_next_on_path(me.node_id, dest)
+            dest_node_id = randint(1, len(gameView.config.graph.nodes))
+            return self.graph_controller.get_next_on_path(me.node_id, dest_node_id)
         
+        closestThief:Agent
+        thief:Agent
         closestThief = NULL
         for thief in self.thiefs:
-            if closestThief == NULL:
+            if closestThief == NULL or self.graph_controller.get_distance(me.node_id, thief.node_id) < self.graph_controller.get_distance(me.node_id, closestThief.node_id):
                 if randint(1,5) < 2:
                     closestThief = thief
                     
-            if type(closestThief) == Agent and self.graph_controller.get_distance(me.node_id, thief.node_id) < self.graph_controller.get_distance(me.node_id, closestThief.node_id):
-                if randint(1,5) < 2:
-                    closestThief = thief
                     
         if closestThief != NULL:
             return self.graph_controller.get_next_on_path(me.node_id, closestThief.node_id)
@@ -86,8 +87,10 @@ class AI:
 
     def update_thief(self, gameView: GameView):
         me = gameView.viewer
+        
+        agent: Agent
         for agent in gameView.visible_agents:
-            if agent.team != me.team and agent.agent_type == AgentType.THIEF and not agent.is_dead:
+            if agent.team != me.team and agent.agent_type == AgentType.THIEF and agent.is_dead == False:
                 self.thiefs.append(agent)
         
     
