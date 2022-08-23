@@ -13,8 +13,8 @@ class GraphController:
         
         path:Path
         for path in graph.paths:
-            self.adjacent_paths[path.first_node_id.id].append(path)
-            self.adjacent_paths[path.second_node_id.id].append(path)
+            self.adjacent_paths[path.first_node_id].append(path)
+            self.adjacent_paths[path.second_node_id].append(path)
         
     def get_graph(self):
         """Returns the given graph"""
@@ -51,8 +51,8 @@ class GraphController:
             
         path: Path
         for path in self.graph.paths:
-            u = path.first_node_id.id
-            v = path.second_node_id.id
+            u = path.first_node_id
+            v = path.second_node_id
             sp[u][v] = 1
             sp[v][u] = 1
             
@@ -69,7 +69,7 @@ class GraphController:
         """returns the next node in the path towards the detination node"""
         path: Path
         for path in self.adjacent_paths[source_node_id]:
-            next_node_id = path.first_node_id.id ^ path.second_node_id.id ^ source_node_id
+            next_node_id = path.first_node_id ^ path.second_node_id ^ source_node_id
             if (self.shortest_path[source_node_id][dest_node_id] == self.shortest_path[next_node_id][dest_node_id] + 1):
                 return next_node_id
         

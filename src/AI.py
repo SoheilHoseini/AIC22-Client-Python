@@ -42,7 +42,7 @@ class AI:
         next = me.id
         path:Path
         for path in adjacentPath:
-            adjacentNode = me.id ^ path.first_node_id.id ^ path.second_node_id.id
+            adjacentNode = me.id ^ path.first_node_id ^ path.second_node_id
             if (self.graph_controller.get_score(next, enemyPolices) < self.graph_controller.get_score(adjacentNode, enemyPolices)):
                 next = adjacentNode
 
