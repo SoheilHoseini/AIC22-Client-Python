@@ -38,14 +38,14 @@ class GraphController:
     def floyd_warshall_algorithm(self):
         """Implement floyd algorithm to calculate the shortest path"""
         
-        row = [1 for i in range(self.nodes_cnt + 1)]
+        row = [0 for i in range(self.nodes_cnt + 1)]
         sp = [row for i in range(self.nodes_cnt + 1)] # a 2D list to store shortest path between each two nodes
         
         for i in range(1, self.nodes_cnt + 1):
             for j in range(1, self.nodes_cnt + 1):
                 sp[i][j] = self.nodes_cnt + 1
                 
-                
+        
         for i in range(1, self.nodes_cnt + 1):
             sp[i][i] = 0
             
@@ -55,7 +55,6 @@ class GraphController:
             v = path.second_node_id
             sp[u][v] = 1
             sp[v][u] = 1
-            
         
         for k in range(1, self.nodes_cnt + 1):
             for i in range(1, self.nodes_cnt + 1):
@@ -69,7 +68,9 @@ class GraphController:
         """returns the next node in the path towards the detination node"""
         path: Path
         for path in self.adjacent_paths[source_node_id]:
+            
             next_node_id = path.first_node_id ^ path.second_node_id ^ source_node_id
+            return next_node_id
             if (self.shortest_path[source_node_id][dest_node_id] == self.shortest_path[next_node_id][dest_node_id] + 1):
                 return next_node_id
         
